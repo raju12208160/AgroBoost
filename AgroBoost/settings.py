@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-apxf7zlj^3$xswbb6-2^kr-6pl2av8fa-@9ap!ly+ixasi-!24"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['agroboost-ot0b.onrender.com', '127.0.0.1', 'localhost']
 
