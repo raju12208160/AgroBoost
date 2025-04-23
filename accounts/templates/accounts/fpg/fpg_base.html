@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- ✅ Hamburger Toggle Button -->
+<button class="hamburger" onclick="toggleSidebar()">☰</button>
+
+<!-- ✅ Sidebar -->
+<div class="sidebar" id="sidebar">
+    <h2>FPG Menu</h2>
+    <a href="{% url 'fpg_add_product' %}">➕ Add Product</a>
+    <a href="{% url 'fpg_products' %}">📦 FPG Products</a>
+    <a href="{% url 'fpg_inventory' %}">📊 Inventory</a>
+    <a href="{% url 'fpg_orders_received' %}">📥 Orders Received</a>
+</div>
+
+<!-- ✅ Main Content -->
+<div class="main-content">
+    <!-- ✅ Message Alerts -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}">
+            {{ message }}
+        </div>    
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ✅ Dynamic Content Block -->
+    {% block fpg_content %}
+    
+    {% endblock %}
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- ✅ Sidebar Toggle Script -->
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('show');
+    }
+
+    // ✅ Auto-hide messages after 3 seconds (correct class names)
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert.alert-success, .alert.alert-info, .alert.alert-warning');
+        alerts.forEach(alert => alert.style.display = 'none');
+    }, 3000);
+</script>
+
+{% endblock %}

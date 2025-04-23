@@ -1,0 +1,235 @@
+{% extends 'accounts/shg/shg_base.html' %}
+
+{% block title %}Your Cart{% endblock %}
+
+{% block shg_content %}
+<h2 class="page-title">Your Cart</h2>
+
+<div id="message" class="message"></div>  <!-- Message Container -->
+
+{% if cart_items %}
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Image</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td><img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="80"></td>
+                    <td>₹{{ item.product.price }}</td>
+                    <td>
+                        <form method="POST" class="quantity-form">
+                            {% csrf_token %}
+                            <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="1" class="quantity-input">
+                            <button type="submit" class="update-btn">Update</button>
+                        </form>
+                    </td>
+                    <td>₹{{ item.total_price }}</td>
+                    <td><a href="{% url 'remove_from_cart' item.id %}" class="remove-btn">Remove</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total-price">
+        <h3>Total: ₹{{ total }}</h3>
+    </div>
+
+    <!-- Proceed to Buy Button -->
+    <div class="proceed-container">
+        <form method="POST" action="{% url 'proceed_to_buy' %}" class="proceed-form">
+            {% csrf_token %}
+            <button type="submit" class="proceed-btn">Proceed to Buy</button>
+        </form>
+    </div>
+    
+
+{% else %}
+    <p>Your cart is empty.</p>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const decreaseButtons = document.querySelectorAll('.decrease-btn');
+        const increaseButtons = document.querySelectorAll('.increase-btn');
+
+        decreaseButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const cartItemId = button.getAttribute('data-cart-item-id');
+                updateCartItemQuantity(cartItemId, 'decrease');
+            });
+        });
+
+        increaseButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const cartItemId = button.getAttribute('data-cart-item-id');
+                updateCartItemQuantity(cartItemId, 'increase');
+            });
+        });
+
+        function updateCartItemQuantity(cartItemId, action) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Get CSRF token
+
+            fetch('/cart/update/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: `cart_item_id=${cartItemId}&action=${action}`,  // Sending data as form encoded
+            })
+            .then(response => response.json())
+            .then(data => {
+                const quantityElement = document.querySelector(`[data-cart-item-id="${cartItemId}"]`).parentElement.querySelector('.quantity');
+                const totalAmountElement = document.querySelector(`[data-cart-item-id="${cartItemId}"]`).parentElement.querySelector('.total');
+
+                if (data.success) {
+                    quantityElement.textContent = data.quantity;
+                    totalAmountElement.textContent = `₹${data.total_amount}`;
+                    document.querySelector('#total').textContent = `Total: ₹${data.total_price}`;
+                }
+
+                // Display the message
+                const messageElement = document.getElementById('message');
+                messageElement.textContent = data.message;
+            })
+            .catch(error => console.log('Error:', error));
+        }
+    });
+</script>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .cart-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 20px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .cart-table th,
+    .cart-table td {
+        padding: 14px;
+        text-align: left;
+    }
+
+    .cart-table th {
+        background-color: #25a31a; /* Green background */
+        color: white;
+        font-weight: bold;
+        border-bottom: 2px solid #1e8449;
+    }
+
+    .cart-table tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .cart-table tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .cart-table td img {
+        border-radius: 8px;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-table .quantity-input {
+        width: 60px;
+        padding: 6px;
+        margin-right: 10px;
+        text-align: center;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .cart-table .update-btn {
+        padding: 6px 12px;
+        background-color: #25a020;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        border-radius: 5px;
+    }
+
+    .cart-table .update-btn:hover {
+        background-color: #186a0f;
+    }
+
+    .cart-table .remove-btn {
+        color: #e74c3c;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .cart-table .remove-btn:hover {
+        text-decoration: underline;
+    }
+
+    .total-price {
+        text-align: right;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 20px;
+        color: #2c3e50;
+    }
+
+    .quantity-form {
+        display: flex;
+        align-items: center;
+    }
+
+    .quantity-form button {
+        margin-left: 10px;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #040d01;
+    }
+
+    .proceed-container {
+    text-align: right;
+    margin-top: 20px;
+    }
+
+    .proceed-btn {
+        padding: 10px 25px;
+        background-color: #239a1f;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .proceed-btn:hover {
+        background-color: #14680f;
+    }
+
+    .message {
+        color: #e74c3c; /* Red for errors */
+        font-weight: bold;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}

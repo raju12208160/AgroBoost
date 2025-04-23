@@ -1,0 +1,56 @@
+{% extends 'accounts/shg/shg_base.html' %}
+
+{% block title %}Update Order Status{% endblock %}
+
+{% block shg_content %}
+<div class="update-order-wrapper">
+    <h2>Update Order Status for Order #{{ order.id }}</h2>
+
+    <p><strong>Product:</strong> {{ order.product.name }}</p>
+    <p><strong>Current Status:</strong> 
+        <div class="status-text">
+            {% if order.status == "Pending" %}
+                <div class="status-icons">
+                    <i class="fa fa-clock pending"></i> Pending
+                </div>
+            {% elif order.status == "Shipped" %}
+                <div class="status-icons">
+                    <i class="fa fa-truck shipped"></i> Shipped
+                </div>
+            {% elif order.status == "Delivered" %}
+                <div class="status-icons">
+                    <i class="fa fa-check-circle delivered"></i> Delivered
+                </div>
+            {% elif order.status == "Cancelled" %}
+                <div class="status-icons">
+                    <i class="fa fa-ban cancelled"></i> Cancelled
+                </div>
+            {% endif %}
+        </div>
+    </p>
+    <p><strong>Ordered on:</strong> {{ order.order_date|date:"M d, Y H:i A" }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="status">Choose New Status:</label>
+            <select name="status" id="status" class="form-control" required>
+                {% if order.status == "Pending" %}
+                    <option value="Pending" {% if order.status == "Pending" %}selected{% endif %}>Pending</option>
+                    <option value="Shipped" {% if order.status == "Shipped" %}selected{% endif %}>Shipped</option>
+                    <option value="Delivered" {% if order.status == "Delivered" %}selected{% endif %}>Delivered</option>
+                    <option value="Cancelled" {% if order.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
+                {% elif order.status == "Shipped" %}
+                    <option value="Shipped" {% if order.status == "Shipped" %}selected{% endif %}>Shipped</option>
+                    <option value="Delivered" {% if order.status == "Delivered" %}selected{% endif %}>Delivered</option>
+                    <option value="Cancelled" {% if order.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
+                {% elif order.status == "Delivered" %}
+                    <option value="Delivered" {% if order.status == "Delivered" %}selected{% endif %}>Delivered</option>
+                {% endif %}
+            </select>
+        </div>
+
+        <button type="submit" class="submit-btn">Update Status</button>
+    </form>
+</div>
+{% endblock %}

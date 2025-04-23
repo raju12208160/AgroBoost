@@ -1,0 +1,38 @@
+{% extends 'accounts/shg/shg_base.html' %}
+
+{% block title %}
+    {% if is_edit %}Edit Product{% else %}Add Product{% endif %}
+{% endblock %}
+
+{% block shg_content %}
+<div class="add-product-wrapper">
+    <h2 class="form-title">
+        {% if is_edit %}Edit Product{% else %}Add New Product{% endif %}
+    </h2>
+
+    {% if is_edit and product.image %}
+        <div style="margin-bottom: 20px;">
+            <strong>Current Image:</strong><br>
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 200px; border: 1px solid #ccc; border-radius: 10px;">
+        </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" class="styled-form">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group {% if field.name == 'description' %}description{% endif %}">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="error">{{ field.errors|striptags }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <div class="form-group full-width">
+            <button type="submit" class="submit-btn">
+                {% if is_edit %}Update Product{% else %}Add Product{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

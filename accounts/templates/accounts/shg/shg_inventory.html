@@ -1,0 +1,73 @@
+{% extends 'accounts/shg/shg_base.html' %}
+
+{% block title %}SHG Inventory{% endblock %}
+
+{% block shg_content %}
+<h2>SHG Inventory</h2>
+<table class="inventory-table">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Image</th>
+            <th>Actions</th>  <!-- Add this column for actions -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.description }}</td>
+            <td>₹{{ product.price }}</td>
+            <td>{{ product.quantity }}</td>
+            <td><img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 50px;"></td>
+            <td>
+                <!-- Edit and Delete buttons -->
+                <a href="{% url 'shg_edit_product' product.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                <a href="{% url 'shg_delete_product' product.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this product?')">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Add some styling -->
+<style>
+    
+
+    .btn {
+        padding: 8px 12px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .btn-sm {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+</style>
+{% endblock %}

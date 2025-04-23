@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}AgroBoost{% endblock %}</title>
+    <link rel="icon" href="{% static 'favicon.png' %}" type="image/png">
+    <!-- External CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block head %}{% endblock %}
+    {% block extra_styles %}{% endblock %}
+</head>
+<body>
+    <div class="page-wrapper">
+    
+      <!-- Combined Header -->
+      <div class="combined-header">
+        <div class="left-section">
+          <h1>AGRO BOOST</h1>
+          <p>Empowering Farmers and Self Help Groups</p>
+        </div>
+        <div class="right-section">
+          <a href="{% url 'dashboard' %}" style="color: white;"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+
+          {% if request.user.is_authenticated and request.user.user_type == 'SHG' %}
+          <a href="{% url 'shg_cart_page' %}" style="color: white;">
+            <i class="fas fa-shopping-cart"></i> Cart
+          </a>
+          {% endif %}
+          <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" style="color: white;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+          </form>
+        </div>
+      </div>
+    
+      <!-- Hamburger -->
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    
+      <!-- Main layout -->
+      <main class="container">
+        {% block content %}{% endblock %}
+      </main>
+    
+      <!-- Footer -->
+      <footer>
+        &copy; 2025 AgroBoost. All rights reserved.
+      </footer>
+    
+    </div> <!-- page-wrapper -->
+    
+{% block extra_scripts %}
+<!-- Sidebar Toggle Script -->
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('show');
+    }
+</script>
+{% endblock %}
+
+</body>
+</html>

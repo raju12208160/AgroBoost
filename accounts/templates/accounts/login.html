@@ -1,0 +1,254 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | AGROBOOST</title>
+  <link rel="icon" href="{% static 'favicon.png' %}" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: row;
+    }
+
+    .split {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    .left {
+      background-color: #2e7d32;
+      color: white;
+      flex-direction: column;
+      text-align: center;
+      height: auto;
+      align-self: stretch;
+    }
+
+    .left h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .left p {
+      font-size: 16px;
+      font-style: italic;
+    }
+
+    .right {
+      background-color: #eef5ee;
+      overflow-y: auto;
+    }
+
+    .form-container {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 400px;
+      max-width: 90%;
+    }
+
+    h2.form-title {
+      margin-bottom: 20px;
+      color: #2e7d32;
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
+    }
+
+    .field-row label {
+      flex: 1;
+    font-weight: bold;
+    color: #2e7d32; /* Green */
+    margin-bottom: 4px;
+    }
+
+
+    .field-row input {
+      flex: 2;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    .field-row input.error {
+      border-color: red;
+    }
+
+    .errorlist {
+      color: red;
+      font-size: 13px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .error-summary {
+      color: red;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .show-pass {
+      font-size: 13px;
+      text-align: left;
+      margin-top: -10px;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .spinner {
+      border: 2px solid transparent;
+      border-top: 2px solid #fff;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+      position: absolute;
+      right: 15px;
+      top: 12px;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 13px;
+      color: #777;
+      margin-top: 20px;
+    }
+
+    .footer a {
+      color: #28a745;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .left {
+        padding: 20px;
+        height: auto;
+      }
+
+      .right {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="split left">
+      <div>
+        <h1>AGROBOOST</h1>
+        <p>Empowering SHGs and FPGs through Food Processing Innovation</p>
+      </div>
+    </div>
+
+    <div class="split right">
+      <div class="form-container">
+        <h2 class="form-title">Login</h2>
+
+        <form method="post" onsubmit="showSpinner()">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="error-summary">{{ form.non_field_errors }}</div>
+          {% endif %}
+
+          {% for field in form %}
+            <div class="field-row">
+              {{ field.label_tag }}
+              {% if field.errors %}
+                {{ field|add_class:"error" }}
+              {% else %}
+                {{ field }}
+              {% endif %}
+            </div>
+            {% if field.errors %}
+              <div style="color: red; font-size: 12px; text-align: left;">{{ field.errors|striptags }}</div>
+            {% endif %}
+
+            {% if field.name == "password" %}
+              <div class="show-pass">
+                <input type="checkbox" onclick="togglePassword()"> Show Password
+              </div>
+            {% endif %}
+          {% endfor %}
+
+          <button type="submit">
+            Login
+            <div class="spinner" id="spinner"></div>
+          </button>
+
+          <div class="footer">
+            Don't have an account? <a href="{% url 'register' %}">Register</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function togglePassword() {
+      const inputs = document.querySelectorAll("input[type='password']");
+      inputs.forEach(input => {
+        input.type = input.type === "password" ? "text" : "password";
+      });
+    }
+
+    function showSpinner() {
+      document.getElementById("spinner").style.display = "inline-block";
+    }
+  </script>
+</body>
+</html>

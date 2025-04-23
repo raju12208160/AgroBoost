@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}End User Dashboard{% endblock %}
+
+{% block content %}
+    <h2>Welcome, {{ request.user.first_name }}!</h2>
+    <p>This is your dashboard. Explore processed agri-products and support local SHGs and FPGs.</p>
+
+    <div class="dashboard-section">
+        <h3>Explore Options</h3>
+        <ul>
+            <li>🛒 Browse available agri-products</li>
+            <li>❤️ Save your favorite producers</li>
+            <li>💬 Leave feedback and ratings</li>
+        </ul>
+    </div>
+{% endblock %}

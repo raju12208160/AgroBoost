@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard | AGROBOOST</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0fff0;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .dashboard {
+            background: white;
+            display: inline-block;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #2e8b57;
+        }
+
+        p {
+            font-size: 18px;
+        }
+
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>AGROBOOST Dashboard</h1>
+        <p>Welcome back, <strong>{{ request.user.username }}</strong>!</p>
+        <p>You are logged in as a <strong>{{ user_type|upper }}</strong> member.</p>
+
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="button">Logout</button>
+        </form>
+    </div>
+</body>
+</html>

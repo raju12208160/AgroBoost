@@ -1,0 +1,301 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register | AGROBOOST</title>
+  <link rel="icon" href="{% static 'favicon.png' %}" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex; min-height: 100vh;
+    }
+
+    .split {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    .left {
+      background-color: #2e7d32;
+      color: white;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .right {
+      background-color: #eef5ee;
+      overflow-y: auto;
+    }
+
+    .form-container {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 400px;
+      max-width: 90%;
+    }
+
+    h2.form-title {
+      margin-bottom: 20px;
+      color: #2e7d32;
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 16px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      outline: none;
+      background-color: transparent;
+    }
+
+    .form-group label {
+      position: absolute;
+      left: 12px;
+      top: 16px;
+      background-color: white;
+      padding: 0 4px;
+      color: #777;
+      font-size: 14px;
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+
+    .form-group input:focus + label,
+    .form-group input:not(:placeholder-shown) + label,
+    .form-group select:focus + label,
+    .form-group select:not([value=""]) + label {
+      top: -8px;
+      left: 8px;
+      font-size: 12px;
+      color: #28a745;
+    }
+
+    .password-note {
+      font-size: 12px;
+      color: #888;
+      margin-top: -12px;
+      margin-bottom: 16px;
+    }
+
+    input.error-input {
+      border-color: red;
+    }
+
+    .errorlist {
+      color: red;
+      font-size: 13px;
+      list-style: none;
+      padding: 0;
+      margin: 4px 0 0 0;
+    }
+
+    .form-errors {
+      color: red;
+      font-size: 14px;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
+
+    .password-toggle {
+      font-size: 12px;
+      color: #007bff;
+      cursor: pointer;
+      margin-top: 4px;
+      user-select: none;
+      display: block;
+      text-align: right;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      position: relative;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    button.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    button.loading::after {
+      content: '';
+      width: 16px;
+      height: 16px;
+      border: 3px solid white;
+      border-top: 3px solid transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #777;
+      text-align: center;
+    }
+
+    .footer a {
+      color: #28a745;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .left {
+        padding: 20px;
+      }
+
+      .right {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="split left">
+      <div>
+        <h1>AGROBOOST</h1>
+        <p>Empowering SHGs and FPGs through Food Processing Innovation</p>
+      </div>
+    </div>
+
+    <div class="split right">
+      <div class="form-container">
+        <h2 class="form-title">Register</h2>
+
+        <form method="post" onsubmit="return validateAndSubmit(this);">
+          {% csrf_token %}
+
+          {% for field in form %}
+            {% if field.name != 'user_type' %}
+              <div class="form-group">
+                {% with "placeholder="|add:field.label as placeholder_str %}
+                  {% if field.errors %}
+                    {{ field|add_class:"error-input"|attr:placeholder_str }}
+                  {% else %}
+                    {{ field|attr:placeholder_str }}
+                  {% endif %}
+                {% endwith %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+                {% if field.name == 'password1' or field.name == 'password2' %}
+                  <span class="password-toggle" onclick="togglePassword(this)">Show Password</span>
+                {% endif %}
+
+                {% if field.errors %}
+                  <ul class="errorlist">
+                    {% for error in field.errors %}
+                      <li>{{ error }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+
+              {% if field.name == 'password2' %}
+                <p class="password-note">Password must be at least 8 characters and contain a mix of letters and numbers.</p>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+
+          <div class="form-group">
+            {{ form.user_type }}
+            <label for="{{ form.user_type.id_for_label }}">Registering As</label>
+            {% if form.user_type.errors %}
+              <ul class="errorlist">
+                {% for error in form.user_type.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+
+          {% if form.non_field_errors %}
+            <div class="form-errors">
+              <ul class="errorlist">
+                {% for error in form.non_field_errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <button type="submit" id="loginBtn">Register</button>
+        </form>
+
+        <div class="footer">
+          Already have an account? <a href="{% url 'login' %}">Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword(el) {
+      const input = el.parentElement.querySelector('input');
+      if (input.type === "password") {
+        input.type = "text";
+        el.textContent = "Hide Password";
+      } else {
+        input.type = "password";
+        el.textContent = "Show Password";
+      }
+    }
+
+    function validateAndSubmit(form) {
+      const button = document.getElementById("loginBtn");
+      button.classList.add("loading");
+      return true;
+    }
+  </script>
+</body>
+</html>
